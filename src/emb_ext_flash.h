@@ -40,6 +40,22 @@ extern "C" {
 int emb_ext_flash_transfer( int id, uint8_t *tx_data, uint8_t *rx_data, uint16_t len );
 
 /**
+ * @brief emb_ext_flash_select select the external flash memory chip, this function must be implemented by the user.
+ * If the chip isn't an SPI chip, this function can be left empty.
+ *
+ * @param id - the id of the external flash memory chip, this is used to support multiple chips. The ID is arbitrary and is set by the user.
+ * @param sel - 1 to select the chip, 0 to de-select the chip.
+ */
+void emb_ext_flash_select( int id, int sel );
+
+/**
+ * @brief emb_ext_flash_delay_us delay for a specified duration in microseconds, this function must be implemented by the user.
+ *
+ * @param duration - the number of microseconds to delay.
+ */
+void emb_ext_flash_delay_us( uint32_t duration );
+
+/**
  * @brief emb_ext_flash_get_jedec_id get the JEDEC ID of the external flash memory chip.
  *
  * @param id - the id of the external flash memory chip, this is used to support multiple chips. The ID is arbitrary and is set by the user.
