@@ -1,22 +1,19 @@
 #include "emb_ext_flash.h"
 
-// User implementation
-// TODO: Add anything you need specific to your implementation here.
-
 // User functions
 int emb_ext_flash_transfer( int id, uint8_t *tx_data, uint8_t *rx_data, uint16_t len )
 {
-    // TODO: Implement this function.
+    // TODO: User must implement this function
 }
 
 void emb_ext_flash_select( int id, int sel )
 {
-    // TODO: Implement this function.
+    // TODO: User must implement this function
 }
 
 void emb_ext_flash_delay_us( uint32_t duration )
 {
-    // TODO: Implement this function.
+    // TODO: User must implement this function
 }
 
 // Private functions
@@ -32,7 +29,7 @@ void emb_ext_flash_write_enable( int id )
 
     // Do the transfer
     emb_ext_flash_select( id, true );
-    emb_ext_flash_transfer( id, &cmd, NULL, 1 );
+    emb_ext_flash_transfer( id, &cmd, 0, 1 );
     emb_ext_flash_select( id, false );
 
     // Block while the WEL bit in the status register is unset
@@ -44,20 +41,22 @@ void emb_ext_flash_write_enable( int id )
 int emb_ext_flash_get_jedec_id( int id, uint8_t *manufacturer_id, uint8_t *memory_type, uint8_t *capacity )
 {
     // Build the command and the payload
-    uint8_t data[4] = { EXT_FLASH_CMD_JEDEC_ID, 0, 0, 0 };
+    uint8_t cmd = EXT_FLASH_CMD_JEDEC_ID;
+    uint8_t data[3] = { 0 };
 
     // Do the transfer
     emb_ext_flash_select( id, true );
-    int rtn = emb_ext_flash_transfer( id, data, data, 4 );
+    emb_ext_flash_transfer( id, &cmd, 0, 1 );
+    int rtn = emb_ext_flash_transfer( id, 0, data, sizeof( data ) );
     emb_ext_flash_select( id, false );
 
     // Populate the fields
-    *manufacturer_id = data[1];
-    *memory_type = data[2];
-    *capacity = data[3];
+    *manufacturer_id = data[0];
+    *memory_type = data[1];
+    *capacity = data[2];
 
     // Return 0 for non error, -1 for error
-    return rtn == 4 ? 0 : -1;
+    return rtn == 3 ? 0 : -1;
 }
 
 int emb_ext_flash_read( int id, uint32_t address, uint8_t *data, uint16_t len )
@@ -86,8 +85,8 @@ int emb_ext_flash_write( int id, uint32_t address, uint8_t *data, uint16_t len )
     // Do the transfer
     emb_ext_flash_select( id, true );
     emb_ext_flash_transfer( id, cmd, 0, sizeof( cmd ) );
-    int rtn = emb_ext_flash_transfer( id, 0, data, len );
-    emb_ext_flash_select( id, true );
+    int rtn = emb_ext_flash_transfer( id, data, 0, len );
+    emb_ext_flash_select( id, false );
 
     // Block while the flash chip commits the write
     while( emb_ext_flash_busy( id ) )
@@ -114,7 +113,7 @@ int emb_ext_flash_erase( int id, uint32_t address, uint32_t len )
 
     // Do the transfer
     emb_ext_flash_select( id, true );
-    int rtn = emb_ext_flash_transfer( id, cmd, NULL, 4 );
+    int rtn = emb_ext_flash_transfer( id, cmd, 0, 4 );
     emb_ext_flash_select( id, false );
 
     // Block while the erase is committed
@@ -135,7 +134,7 @@ void emb_ext_flash_chip_erase( int id )
 
     // Do the transfer
     emb_ext_flash_select( id, true );
-    emb_ext_flash_transfer( id, &cmd, NULL, 1 );
+    emb_ext_flash_transfer( id, &cmd, 0, 1 );
     emb_ext_flash_select( id, false );
 
     // Block while the erase is committed - this can take 2 minutes + on a chip a erase
@@ -146,15 +145,17 @@ void emb_ext_flash_chip_erase( int id )
 uint8_t emb_ext_flash_get_status( int id )
 {
     // Build the command
-    uint8_t cmd[] = { EXT_FLASH_CMD_READ_STATUS_REG, 0 };
+    uint8_t cmd = EXT_FLASH_CMD_READ_STATUS_REG;
+    uint8_t status = 0;
 
     // Do the transfer
     emb_ext_flash_select( id, true );
-    emb_ext_flash_transfer( id, cmd, cmd, 2 );
+    emb_ext_flash_transfer( id, &cmd, 0, 1 );
+    emb_ext_flash_transfer( id, 0, &status, 1 );
     emb_ext_flash_select( id, false );
 
     // Return the status
-    return cmd[1];
+    return status;
 }
 
 int emb_ext_flash_sleep( int id )
@@ -164,7 +165,7 @@ int emb_ext_flash_sleep( int id )
 
     // Do the transfer
     emb_ext_flash_select( id, true );
-    int rtn = emb_ext_flash_transfer( id, &cmd, NULL, 1 );
+    int rtn = emb_ext_flash_transfer( id, &cmd, 0, 1 );
     emb_ext_flash_select( id, false );
 
     return rtn == 1 ? 0 : -1;
