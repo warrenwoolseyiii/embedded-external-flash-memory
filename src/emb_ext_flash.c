@@ -12,7 +12,7 @@ void emb_ext_flash_write_enable( emb_flash_intf_handle_t *p_intf )
     uint8_t cmd = EXT_FLASH_CMD_WRITE_ENABLE;
 
     // Null check
-    if( !p_intf )
+    if( !p_intf || !p_intf->initialized )
         return;
 
     // Do the transfer
@@ -26,6 +26,25 @@ void emb_ext_flash_write_enable( emb_flash_intf_handle_t *p_intf )
 }
 
 // Pubic functions
+int emb_ext_flash_init_intf( emb_flash_intf_handle_t *p_intf )
+{
+    // Null check
+    if( !p_intf )
+        return -1;
+
+    // Set the initialized flag to 0;
+    p_intf->initialized = 0;
+
+    // Check all of the function pointers, if any are null return -1
+    if( !p_intf->select || !p_intf->deselect || !p_intf->write || !p_intf->read || !p_intf->delay_us )
+        return -1;
+
+    // Set the initialized flag to 1
+    p_intf->initialized = 1;
+
+    return 0;
+}
+
 int emb_ext_flash_get_jedec_id( emb_flash_intf_handle_t *p_intf, uint8_t *manufacturer_id, uint8_t *memory_type, uint8_t *capacity )
 {
     // Build the command and the payload
@@ -33,7 +52,7 @@ int emb_ext_flash_get_jedec_id( emb_flash_intf_handle_t *p_intf, uint8_t *manufa
     uint8_t data[3] = { 0 };
 
     // Null check
-    if( !p_intf )
+    if( !p_intf || !p_intf->initialized )
         return -1;
 
     // Do the transfer
@@ -57,7 +76,7 @@ int emb_ext_flash_read( emb_flash_intf_handle_t *p_intf, uint32_t address, uint8
     uint8_t cmd[4] = { EXT_FLASH_CMD_READ_DATA, ( address >> 16 ) & 0xFF, ( address >> 8 ) & 0xFF, address & 0xFF };
 
     // Null check
-    if( !p_intf )
+    if( !p_intf || !p_intf->initialized )
         return 0;
 
     // Do the transfer
@@ -79,7 +98,7 @@ int emb_ext_flash_write( emb_flash_intf_handle_t *p_intf, uint32_t address, uint
     uint8_t cmd[4] = { EXT_FLASH_CMD_PAGE_PROGRAM, ( address >> 16 ) & 0xFF, ( address >> 8 ) & 0xFF, address & 0xFF };
 
     // Null check
-    if( !p_intf )
+    if( !p_intf || !p_intf->initialized )
         return 0;
 
     // Do the transfer
@@ -102,7 +121,7 @@ int emb_ext_flash_erase( emb_flash_intf_handle_t *p_intf, uint32_t address, uint
     emb_ext_flash_write_enable( p_intf );
 
     // Null check
-    if( !p_intf )
+    if( !p_intf || !p_intf->initialized )
         return -1;
 
     // Determine the most efficient command to use
@@ -134,8 +153,8 @@ int emb_ext_flash_chip_erase( emb_flash_intf_handle_t *p_intf )
     emb_ext_flash_write_enable( p_intf );
 
     // Null check
-    if( !p_intf )
-        return;
+    if( !p_intf || !p_intf->initialized )
+        return -1;
 
     // Build the command
     uint8_t cmd = EXT_FLASH_CMD_CHIP_ERASE;
@@ -160,7 +179,7 @@ uint8_t emb_ext_flash_get_status( emb_flash_intf_handle_t *p_intf )
     uint8_t status = 0;
 
     // Null check
-    if( !p_intf )
+    if( !p_intf || !p_intf->initialized )
         return status;
 
     // Do the transfer
@@ -179,7 +198,7 @@ int emb_ext_flash_sleep( emb_flash_intf_handle_t *p_intf )
     uint8_t cmd = EXT_FLASH_CMD_POWER_DOWN;
 
     // Null check
-    if( !p_intf )
+    if( !p_intf || !p_intf->initialized )
         return -1;
 
     // Do the transfer
@@ -196,7 +215,7 @@ int emb_ext_flash_wake( emb_flash_intf_handle_t *p_intf )
     uint8_t cmd = EXT_FLASH_CMD_RELEASE_POWER_DOWN;
 
     // Null check
-    if( !p_intf )
+    if( !p_intf || !p_intf->initialized )
         return -1;
 
     // Do the transfer

@@ -34,6 +34,8 @@ extern "C" {
  */
 typedef struct
 {
+    // Flag to indicate if the interface handle has been initialized.
+    uint8_t initialized;
     // Function pointer to select the external flash memory chip.
     void ( *select )();
     // Function point to deselec the external flash memory chip.
@@ -45,6 +47,16 @@ typedef struct
     // Function pointer to delay for a specified duration in microseconds.
     void ( *delay_us )( uint32_t duration );
 } emb_flash_intf_handle_t;
+
+/**
+ * @brief emb_ext_flash_init_intf - initialize the interface handle, this function must be called before any other functions
+ * for each interface handle. All this does is check each function pointer for a null value and returns -1 if any are null.
+ * Otherwise it sets the initialized flag to 1 and returns 0.
+ *
+ * @param p_intf - pointer to the interface handle.
+ * @return int - 0 on success, -1 on failure.
+ */
+int emb_ext_flash_init_intf( emb_flash_intf_handle_t *p_intf );
 
 /**
  * @brief emb_ext_flash_get_jedec_id get the JEDEC ID of the external flash memory chip.
