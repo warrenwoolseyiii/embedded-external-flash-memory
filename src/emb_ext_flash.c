@@ -1,4 +1,25 @@
+
+/*********************************************************************************
+DISCLAIMER:
+
+This code is protected under the MIT open source license. The code is provided
+"as is" without warranty of any kind, either express or implied, including but
+not limited to the implied warranties of merchantability, fitness for a particular
+purpose, or non-infringement. In no event shall the author or any other party be
+liable for any direct, indirect, incidental, special, exemplary, or consequential
+damages, however caused and on any theory of liability, whether in contract,
+strict liability, or tort (including negligence or otherwise), arising in any way
+out of the use of this code or performance or use of the results of this code. By
+using this code, you agree to hold the author and any other party harmless from
+any and all liability and to use the code at your own risk.
+
+This code was written by GitHub user: budgettsfrog
+Contact: budgettsfrog@protonmail.com
+GitHub: https://github.com/warrenwoolseyiii
+*********************************************************************************/
+
 #include "emb_ext_flash.h"
+#include "emb_ext_flash_version.h"
 
 // Private functions
 uint8_t emb_ext_flash_busy( emb_flash_intf_handle_t *p_intf )
@@ -228,4 +249,31 @@ int emb_ext_flash_wake( emb_flash_intf_handle_t *p_intf )
 
     // Return 0 for success -1 otherwise.
     return rtn;
+}
+
+const char *emb_ext_flash_get_lib_ver()
+{
+    // Get the major, minor, and rev numbers
+    int major = MAJOR;
+    int minor = MINOR;
+    int rev = REV;
+
+    // Build the string, without using sprintf
+    static char ver[16];
+    ver[0] = 'v';
+    ver[1] = ( major / 100 ) + '0';
+    ver[2] = ( ( major % 100 ) / 10 ) + '0';
+    ver[3] = ( major % 10 ) + '0';
+    ver[4] = '.';
+    ver[5] = ( minor / 100 ) + '0';
+    ver[6] = ( ( minor % 100 ) / 10 ) + '0';
+    ver[7] = ( minor % 10 ) + '0';
+    ver[8] = '.';
+    ver[9] = ( rev / 100 ) + '0';
+    ver[10] = ( ( rev % 100 ) / 10 ) + '0';
+    ver[11] = ( rev % 10 ) + '0';
+    ver[12] = '\0';
+
+    // Return the string
+    return ver;
 }

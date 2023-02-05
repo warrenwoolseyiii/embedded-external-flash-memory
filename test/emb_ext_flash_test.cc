@@ -1,3 +1,23 @@
+
+/*********************************************************************************
+DISCLAIMER:
+
+This code is protected under the MIT open source license. The code is provided
+"as is" without warranty of any kind, either express or implied, including but
+not limited to the implied warranties of merchantability, fitness for a particular
+purpose, or non-infringement. In no event shall the author or any other party be
+liable for any direct, indirect, incidental, special, exemplary, or consequential
+damages, however caused and on any theory of liability, whether in contract,
+strict liability, or tort (including negligence or otherwise), arising in any way
+out of the use of this code or performance or use of the results of this code. By
+using this code, you agree to hold the author and any other party harmless from
+any and all liability and to use the code at your own risk.
+
+This code was written by GitHub user: budgettsfrog
+Contact: budgettsfrog@protonmail.com
+GitHub: https://github.com/warrenwoolseyiii
+*********************************************************************************/
+
 #include <gtest/gtest.h>
 #include <emb_ext_flash.h>
 
@@ -346,6 +366,12 @@ class emb_ext_flash_test : public ::testing::Test
     // put in any custom data members that you need
 };
 
+TEST_F( emb_ext_flash_test, print_version )
+{
+    printf( "emb_ext_flash version: %s\n", emb_ext_flash_get_lib_ver() );
+    ASSERT_TRUE( 1 );
+}
+
 TEST_F( emb_ext_flash_test, test_null_init )
 {
     // Test null initialization
@@ -604,7 +630,7 @@ TEST_F( emb_ext_flash_test, block_32k_erase )
 TEST_F( emb_ext_flash_test, block_64k_erase )
 {
     // Write the entire memory to 0
-    uint8_t tx_data[32768] = { 0 };
+    uint8_t  tx_data[32768] = { 0 };
     uint32_t addr = 0;
     for( int i = 0; i < 2; i++ ) {
         ASSERT_EQ( emb_ext_flash_write( &_intf, addr, tx_data, 32768 ), 32768 );

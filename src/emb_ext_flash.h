@@ -1,3 +1,23 @@
+
+/*********************************************************************************
+DISCLAIMER:
+
+This code is protected under the MIT open source license. The code is provided
+"as is" without warranty of any kind, either express or implied, including but
+not limited to the implied warranties of merchantability, fitness for a particular
+purpose, or non-infringement. In no event shall the author or any other party be
+liable for any direct, indirect, incidental, special, exemplary, or consequential
+damages, however caused and on any theory of liability, whether in contract,
+strict liability, or tort (including negligence or otherwise), arising in any way
+out of the use of this code or performance or use of the results of this code. By
+using this code, you agree to hold the author and any other party harmless from
+any and all liability and to use the code at your own risk.
+
+This code was written by GitHub user: budgettsfrog
+Contact: budgettsfrog@protonmail.com
+GitHub: https://github.com/warrenwoolseyiii
+*********************************************************************************/
+
 #ifndef EMB_EXT_FLASH_H_
 #define EMB_EXT_FLASH_H_
 
@@ -132,6 +152,12 @@ int emb_ext_flash_sleep( emb_flash_intf_handle_t *p_intf );
  * @return int - 0 on success, -1 on failure.
  */
 int emb_ext_flash_wake( emb_flash_intf_handle_t *p_intf );
+
+/**
+ * @brief emb_ext_flash_get_lib_ver get the version of the external flash memory library.
+ * @return const char* - pointer to the version string.
+ */
+const char *emb_ext_flash_get_lib_ver();
 
 #ifdef __cplusplus
 }
