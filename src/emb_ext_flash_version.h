@@ -3,6 +3,6 @@
 
 #define MAJOR 1
 #define MINOR 0
-#define REV 9
+#define REV 11
 
 #endif /* EMB_EXT_FLASH_VERSION_H */
