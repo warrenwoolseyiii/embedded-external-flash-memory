@@ -52,7 +52,7 @@ int emb_ext_flash_get_jedec_id( emb_flash_intf_handle_t *p_intf, uint8_t *manufa
     uint8_t data[3] = { 0 };
 
     // Null check
-    if( !p_intf || !p_intf->initialized )
+    if( !p_intf || !p_intf->initialized || !manufacturer_id || !memory_type || !capacity )
         return -1;
 
     // Do the transfer
@@ -76,7 +76,7 @@ int emb_ext_flash_read( emb_flash_intf_handle_t *p_intf, uint32_t address, uint8
     uint8_t cmd[4] = { EXT_FLASH_CMD_READ_DATA, ( address >> 16 ) & 0xFF, ( address >> 8 ) & 0xFF, address & 0xFF };
 
     // Null check
-    if( !p_intf || !p_intf->initialized )
+    if( !p_intf || !p_intf->initialized || !data || !len )
         return 0;
 
     // Do the transfer
@@ -98,7 +98,7 @@ int emb_ext_flash_write( emb_flash_intf_handle_t *p_intf, uint32_t address, uint
     uint8_t cmd[4] = { EXT_FLASH_CMD_PAGE_PROGRAM, ( address >> 16 ) & 0xFF, ( address >> 8 ) & 0xFF, address & 0xFF };
 
     // Null check
-    if( !p_intf || !p_intf->initialized )
+    if( !p_intf || !p_intf->initialized || !data || !len )
         return 0;
 
     // Do the transfer
