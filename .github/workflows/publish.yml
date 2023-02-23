@@ -1,0 +1,26 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  Publish:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Package C Assets
+      run: |
+        tar -czvf bl_assets.tar.gz src/emb_ext_flash_version.h src/emb_ext_flash.c src/emb_ext_flash.h
+
+    - name: Release
+      run: |
+        version="$(./utilities/version/get_version.sh)"
+        gh release create "$version" bl_assets.tar.gz --title "$version" --generate-notes --repo https://github.com/warrenwoolseyiii/embedded-external-flash-memory --target continuos-integration
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
