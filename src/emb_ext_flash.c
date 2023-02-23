@@ -254,9 +254,9 @@ int emb_ext_flash_wake( emb_flash_intf_handle_t *p_intf )
 const char *emb_ext_flash_get_lib_ver()
 {
     // Get the major, minor, and rev numbers
-    int major = MAJOR;
-    int minor = MINOR;
-    int rev = REV;
+    int major = EMBEDDED_FLASH_MAJOR;
+    int minor = EMBEDDED_FLASH_MINOR;
+    int rev = EMBEDDED_FLASH_REV;
 
     // Build the string, without using sprintf
     static char ver[16];
