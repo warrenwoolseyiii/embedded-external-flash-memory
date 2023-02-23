@@ -1,8 +1,8 @@
 #ifndef EMB_EXT_FLASH_VERSION_H
 #define EMB_EXT_FLASH_VERSION_H
 
-#define MAJOR 1
-#define MINOR 0
-#define REV 12
+#define EMBEDDED_FLASH_MAJOR 1
+#define EMBEDDED_FLASH_MINOR 0
+#define EMBEDDED_FLASH_REV 14
 
 #endif /* EMB_EXT_FLASH_VERSION_H */
