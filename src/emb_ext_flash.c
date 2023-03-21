@@ -112,28 +112,50 @@ int emb_ext_flash_read( emb_flash_intf_handle_t *p_intf, uint32_t address, uint8
 
 int emb_ext_flash_write( emb_flash_intf_handle_t *p_intf, uint32_t address, uint8_t *data, uint16_t len )
 {
-    // Enable writes
-    emb_ext_flash_write_enable( p_intf );
+    uint16_t t_len = len;
+    int      rtn = 0;
+    int      bytes_written = 0;
+    do {
+        // Enable writes
+        emb_ext_flash_write_enable( p_intf );
 
-    // Build the command
-    uint8_t cmd[4] = { EXT_FLASH_CMD_PAGE_PROGRAM, ( address >> 16 ) & 0xFF, ( address >> 8 ) & 0xFF, address & 0xFF };
+        // Build the command
+        uint8_t cmd[4] = { EXT_FLASH_CMD_PAGE_PROGRAM, ( address >> 16 ) & 0xFF, ( address >> 8 ) & 0xFF, address & 0xFF };
 
-    // Null check
-    if( !p_intf || !p_intf->initialized || !data || !len )
-        return 0;
+        // Null check
+        if( !p_intf || !p_intf->initialized || !data || !len )
+            return 0;
 
-    // Do the transfer
-    p_intf->select();
-    p_intf->write( cmd, sizeof( cmd ) );
-    int rtn = p_intf->write( data, len );
-    p_intf->deselect();
+        // If the address + the length is going to cross a 256 byte page boundary, we need to split this into 2 transactions.
+        int w_len = len;
+        if( ( address & 0xFF ) + len > 0xFF )
+            w_len = 0x100 - ( address & 0xFF );
 
-    // Block while the flash chip commits the write
-    while( emb_ext_flash_busy( p_intf ) )
-        ;
+        // Do the transfer
+        p_intf->select();
+        p_intf->write( cmd, sizeof( cmd ) );
+        rtn = p_intf->write( data, w_len );
+        p_intf->deselect();
+
+        // Block while the flash chip commits the write
+        while( emb_ext_flash_busy( p_intf ) )
+            ;
+
+        // Keep track of the number of bytes written
+        bytes_written += w_len;
+        if( rtn != 0 )
+            break;
+
+        if( bytes_written < t_len ) {
+            // Update the address and data pointer if we need to
+            address += w_len;
+            data += w_len;
+            len -= w_len;
+        }
+    } while( bytes_written < t_len );
 
     // Return the number of bytes written
-    return ( rtn == 0 ? len : 0 );
+    return bytes_written;
 }
 
 int emb_ext_flash_erase( emb_flash_intf_handle_t *p_intf, uint32_t address, uint32_t len )
